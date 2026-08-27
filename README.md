@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="3xui-mcp — 3x-ui at your fingertips for AI agents" width="100%" />
+  <img src="assets/banner.png" alt="3xui-mcp — 3x-ui at your fingertips for AI agents" width="100%" />
 </p>
 
 <p align="center">
