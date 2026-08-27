@@ -110,3 +110,15 @@ Opens the [MCP Inspector](https://github.com/modelcontextprotocol/inspector) aga
 ## Agent skill
 
 [`skills/3xui-mcp/SKILL.md`](skills/3xui-mcp/SKILL.md) documents every tool's required/optional fields, units (GB vs bytes, ms timestamps), and common workflows for an AI agent driving this server — load it alongside the server so the agent doesn't have to guess input shapes from tool descriptions alone.
+
+## Release process
+
+Versioning lives in GitHub Releases, not in manual `package.json` commits:
+
+1. Draft a [new GitHub Release](https://github.com/iamhelitha/3xui-mcp/releases/new) with tag `vX.Y.Z` (must match `vX.Y.Z` or `vX.Y.Z-prerelease`).
+2. Publishing the release triggers [`.github/workflows/release.yml`](.github/workflows/release.yml), which builds, sets `package.json`'s version to match the tag, and runs `npm publish`.
+3. If the release event doesn't fire the workflow (GitHub occasionally misses it), trigger it manually: Actions → **Publish to npm** → **Run workflow**, entering the same tag.
+
+Requires a repo secret `NPM_TOKEN` — an npm access token with publish rights and 2FA bypass enabled for automation, added under **Settings → Secrets and variables → Actions**.
+
+The version checked into `package.json` on `main` is a starting point only; the release tag is the source of truth for what actually gets published. Bump it locally too when convenient so the repo doesn't drift too far from the last published version, but the workflow doesn't depend on it matching.
