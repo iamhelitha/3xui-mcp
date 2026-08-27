@@ -1,6 +1,6 @@
 {
   "name": "3xui-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server exposing 3x-ui panel read operations and inbound/client CRUD to LLM agents, built on 3xui-api-client",
   "type": "module",
   "main": "dist/index.js",

@@ -4,7 +4,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { registerInboundTools } from './tools/inbounds.js';
 import { registerClientTools } from './tools/clients.js';
 
-const server = new McpServer({ name: '3xui-mcp', version: '0.1.0' });
+const server = new McpServer({ name: '3xui-mcp', version: '0.1.1' });
 
 registerInboundTools(server);
 registerClientTools(server);
