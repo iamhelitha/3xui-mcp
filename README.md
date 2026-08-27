@@ -1,4 +1,4 @@
-# 3xui-mcp-server
+# 3xui-mcp
 
 MCP (Model Context Protocol) server for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel, built on [`3xui-api-client`](https://www.npmjs.com/package/3xui-api-client).
 
@@ -57,7 +57,7 @@ Add to your client's MCP config (e.g. Claude Desktop `claude_desktop_config.json
   "mcpServers": {
     "3xui": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-server/dist/index.js"],
+      "args": ["/absolute/path/to/3xui-mcp/dist/index.js"],
       "env": {
         "THREEXUI_BASE_URL": "https://your-panel.example.com",
         "THREEXUI_USERNAME": "admin",
@@ -68,7 +68,7 @@ Add to your client's MCP config (e.g. Claude Desktop `claude_desktop_config.json
 }
 ```
 
-Once published to npm, `command`/`args` can be replaced with `"npx"` / `["-y", "3xui-mcp-server"]`.
+Once published to npm, `command`/`args` can be replaced with `"npx"` / `["-y", "3xui-mcp"]`.
 
 ## Test locally
 

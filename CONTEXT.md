@@ -92,8 +92,8 @@ than dumping everything into the existing two files.
 
 ## Where to publish (decided, not yet executed)
 
-- **npm** as `3xui-mcp-server` — primary distribution; lets users run it via
-  `npx 3xui-mcp-server` without cloning.
+- **npm** as `3xui-mcp` — primary distribution; lets users run it via
+  `npx 3xui-mcp` without cloning.
 - **GitHub** (this repo) — source of truth, referenced from npm's
   `repository` field.
 - **Official MCP servers registry** (`github.com/modelcontextprotocol/servers`)
