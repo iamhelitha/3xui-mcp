@@ -12,9 +12,28 @@
 
 # 3xui-mcp
 
-MCP (Model Context Protocol) server for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel, built on [`3xui-api-client`](https://www.npmjs.com/package/3xui-api-client). Manage inbounds and clients on your VPN panel directly from Claude, Cursor, or any MCP-compatible client.
+MCP (Model Context Protocol) server for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel, built on [`3xui-api-client`](https://www.npmjs.com/package/3xui-api-client). Manage inbounds and clients on your VPN panel directly from Claude, Cursor, VS Code, or any MCP-compatible client.
 
-Scoped intentionally to keep tool context small: **read operations** plus **full CRUD for inbounds and clients**. Nodes, groups, geo files, backups, Xray config, and panel settings are out of scope — extend `src/tools/` if you need them.
+Scoped intentionally to keep tool context small: **read operations** plus **full CRUD for inbounds and clients**. Nodes, groups, geo files, backups, Xray config, and panel settings are out of scope — see [Contributing](#contributing) if you need them.
+
+## Contents
+
+- [Requirements](#requirements)
+- [Tools](#tools)
+- [Configuration](#configuration)
+- [Use with an MCP client](#use-with-an-mcp-client)
+- [Example prompts](#example-prompts)
+- [Agent skill](#agent-skill)
+- [Security](#security)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Requirements
+
+- Node.js **≥ 18**
+- A reachable 3x-ui panel — any version [`3xui-api-client`](https://github.com/iamhelitha/3xui-api-client) supports: modern (React, v3.x+) and legacy (Vue, v2.x), auto-detected
+- Admin credentials for that panel (username/password or an API token)
 
 ## Tools
 
@@ -54,7 +73,11 @@ THREEXUI_PANEL_TYPE=auto   # auto | modern | legacy
 
 ## Use with an MCP client
 
-Add to your client's MCP config (e.g. Claude Desktop `claude_desktop_config.json`). No install or path needed — `npx` fetches and runs the published package on demand:
+No install or path needed — `npx` fetches and runs the published package on demand.
+
+### Claude Desktop
+
+Add to `claude_desktop_config.json`:
 
 ```json
 {
@@ -72,23 +95,25 @@ Add to your client's MCP config (e.g. Claude Desktop `claude_desktop_config.json
 }
 ```
 
-### Running from source instead
-
-If you're developing this server locally rather than using the published package:
+### Claude Code (CLI)
 
 ```bash
-npm install
-npm run build
+claude mcp add --env THREEXUI_BASE_URL=https://your-panel.example.com \
+  --env THREEXUI_USERNAME=admin \
+  --env THREEXUI_PASSWORD=your-password \
+  3xui -- npx -y 3xui-mcp
 ```
 
-Then point your MCP config at the built file directly — replace the path below with wherever you actually cloned this repo:
+### Cursor
+
+Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project-scoped) — same schema as Claude Desktop above:
 
 ```json
 {
   "mcpServers": {
     "3xui": {
-      "command": "node",
-      "args": ["/absolute/path/to/3xui-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "3xui-mcp"],
       "env": {
         "THREEXUI_BASE_URL": "https://your-panel.example.com",
         "THREEXUI_USERNAME": "admin",
@@ -99,26 +124,72 @@ Then point your MCP config at the built file directly — replace the path below
 }
 ```
 
-## Test locally
+### VS Code (GitHub Copilot)
 
-```bash
-npm run inspector
+Add to `.vscode/mcp.json` — note the top-level key is `servers`, not `mcpServers`:
+
+```json
+{
+  "servers": {
+    "3xui": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "3xui-mcp"],
+      "env": {
+        "THREEXUI_BASE_URL": "https://your-panel.example.com",
+        "THREEXUI_USERNAME": "admin",
+        "THREEXUI_PASSWORD": "your-password"
+      }
+    }
+  }
+}
 ```
 
-Opens the [MCP Inspector](https://github.com/modelcontextprotocol/inspector) against this server.
+### Running from source instead
+
+See [Contributing](#contributing) if you'd rather build and point your MCP config at a local checkout.
+
+## Example prompts
+
+Once configured, you can ask your agent things like:
+
+- "List all my 3x-ui inbounds and how many clients are on each"
+- "Show me which clients are currently online"
+- "Add a new VLESS client called `alice` to inbound 3 with a 50GB limit"
+- "How much data has `bob@example.com` used, and when does it expire?"
+- "Extend `alice`'s client by 30 days"
+- "Disable the client with email `old-user`"
+- "Create a new inbound on port 9000 with the same settings as inbound 1, just a different remark"
+
+The agent maps these to the tool calls above — see [Agent skill](#agent-skill) for the reference it uses to get field formats right.
 
 ## Agent skill
 
 [`skills/3xui-mcp/SKILL.md`](skills/3xui-mcp/SKILL.md) documents every tool's required/optional fields, units (GB vs bytes, ms timestamps), and common workflows for an AI agent driving this server — load it alongside the server so the agent doesn't have to guess input shapes from tool descriptions alone.
 
-## Release process
+## Security
 
-Versioning lives in GitHub Releases, not in manual `package.json` commits:
+- **Your panel credentials grant full admin access.** `THREEXUI_USERNAME`/`THREEXUI_PASSWORD` (or `THREEXUI_API_TOKEN`) are only as safe as the MCP client config file they live in (e.g. `claude_desktop_config.json`) — protect that file with normal OS file permissions, and never commit it. Prefer an API token over username/password where your panel supports it: tokens can be scoped and revoked without invalidating a session. See [`3xui-api-client`'s Session Security notes](https://github.com/iamhelitha/3xui-api-client#session-security) for how the underlying session cookie is handled.
+- **`create_client`'s generated credentials are shown once.** The UUID/password/keys returned in that tool's response are not retrievable in plaintext afterward — if you're driving this via an agent, make sure it actually surfaces them to you rather than just reporting success.
+- **Write tools are irreversible.** `delete_inbound` and `delete_client` have no confirmation step built into the tool itself — that's the calling agent's responsibility (see [`SKILL.md`](skills/3xui-mcp/SKILL.md)'s guidance on this). If you're driving the server directly (not through an agent), double-check IDs/emails before calling them.
 
-1. Draft a [new GitHub Release](https://github.com/iamhelitha/3xui-mcp/releases/new) with tag `vX.Y.Z` (must match `vX.Y.Z` or `vX.Y.Z-prerelease`).
-2. Publishing the release triggers [`.github/workflows/release.yml`](.github/workflows/release.yml), which builds, sets `package.json`'s version to match the tag, and runs `npm publish`.
-3. If the release event doesn't fire the workflow (GitHub occasionally misses it), trigger it manually: Actions → **Publish to npm** → **Run workflow**, entering the same tag.
+## Troubleshooting
 
-Requires a repo secret `NPM_TOKEN` — an npm access token with publish rights and 2FA bypass enabled for automation, added under **Settings → Secrets and variables → Actions**.
+**`Missing required environment variable: THREEXUI_BASE_URL`** (or `_USERNAME`/`_PASSWORD`)
+Your MCP client's config is missing the `env` block, or it's missing one of the required entries. Check the [Configuration](#configuration) section — exactly one auth mode (username/password or API token) must be fully set.
 
-The version checked into `package.json` on `main` is a starting point only; the release tag is the source of truth for what actually gets published. Bump it locally too when convenient so the repo doesn't drift too far from the last published version, but the workflow doesn't depend on it matching.
+**Login fails / tools return a 401 or 404**
+Confirm `THREEXUI_BASE_URL` doesn't include a trailing `/panel` and does include any custom base path your panel uses. If your panel is on an unusual setup, try setting `THREEXUI_PANEL_TYPE` explicitly (`modern` or `legacy`) instead of `auto`.
+
+**A write tool succeeds but the change isn't visible in the panel UI**
+Some panels cache dashboard views — try refreshing. If the tool's response has `success: true`, the change was accepted by the panel API.
+
+**Still stuck?** Open an issue with the tool name, a redacted version of the error, and your panel version if known.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for development setup, how to add a new tool, and the release process.
+
+## License
+
+[Apache-2.0](LICENSE)
