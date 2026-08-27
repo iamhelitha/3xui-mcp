@@ -77,3 +77,7 @@ npm run inspector
 ```
 
 Opens the [MCP Inspector](https://github.com/modelcontextprotocol/inspector) against this server.
+
+## Agent skill
+
+[`skills/3xui-mcp/SKILL.md`](skills/3xui-mcp/SKILL.md) documents every tool's required/optional fields, units (GB vs bytes, ms timestamps), and common workflows for an AI agent driving this server — load it alongside the server so the agent doesn't have to guess input shapes from tool descriptions alone.
