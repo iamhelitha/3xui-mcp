@@ -57,8 +57,10 @@ Scoped intentionally to keep tool context small: **read operations** plus **full
 Set credentials via environment variables — pick **one** auth mode:
 
 ```bash
-# Required
-THREEXUI_BASE_URL=https://your-panel.example.com
+# Required — protocol + host + port, plus your panel's custom base path if it has
+# one (most 3x-ui panels do, e.g. a random string appended for security). Example
+# shape: https://your-panel.example.com:2053/aB3xR9qKzL
+THREEXUI_BASE_URL=https://your-panel.example.com:2053/your-webBasePath
 
 # Cookie auth (admin username/password)
 THREEXUI_USERNAME=admin
@@ -70,6 +72,8 @@ THREEXUI_API_TOKEN=your-token
 # Optional, default "auto"
 THREEXUI_PANEL_TYPE=auto   # auto | modern | legacy
 ```
+
+Do **not** include a trailing `/panel` — the underlying client appends panel paths itself.
 
 ## Use with an MCP client
 
@@ -86,7 +90,7 @@ Add to `claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "3xui-mcp"],
       "env": {
-        "THREEXUI_BASE_URL": "https://your-panel.example.com",
+        "THREEXUI_BASE_URL": "https://your-panel.example.com:2053/your-webBasePath",
         "THREEXUI_USERNAME": "admin",
         "THREEXUI_PASSWORD": "your-password"
       }
@@ -98,7 +102,7 @@ Add to `claude_desktop_config.json`:
 ### Claude Code (CLI)
 
 ```bash
-claude mcp add --env THREEXUI_BASE_URL=https://your-panel.example.com \
+claude mcp add --env THREEXUI_BASE_URL=https://your-panel.example.com:2053/your-webBasePath \
   --env THREEXUI_USERNAME=admin \
   --env THREEXUI_PASSWORD=your-password \
   3xui -- npx -y 3xui-mcp
@@ -115,7 +119,7 @@ Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project-scoped) — 
       "command": "npx",
       "args": ["-y", "3xui-mcp"],
       "env": {
-        "THREEXUI_BASE_URL": "https://your-panel.example.com",
+        "THREEXUI_BASE_URL": "https://your-panel.example.com:2053/your-webBasePath",
         "THREEXUI_USERNAME": "admin",
         "THREEXUI_PASSWORD": "your-password"
       }
@@ -136,7 +140,7 @@ Add to `.vscode/mcp.json` — note the top-level key is `servers`, not `mcpServe
       "command": "npx",
       "args": ["-y", "3xui-mcp"],
       "env": {
-        "THREEXUI_BASE_URL": "https://your-panel.example.com",
+        "THREEXUI_BASE_URL": "https://your-panel.example.com:2053/your-webBasePath",
         "THREEXUI_USERNAME": "admin",
         "THREEXUI_PASSWORD": "your-password"
       }

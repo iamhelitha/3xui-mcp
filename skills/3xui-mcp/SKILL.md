@@ -35,7 +35,7 @@ for Claude Desktop / Claude Code:
       "command": "npx",
       "args": ["-y", "3xui-mcp"],
       "env": {
-        "THREEXUI_BASE_URL": "https://your-panel.example.com",
+        "THREEXUI_BASE_URL": "https://your-panel.example.com:2053/your-webBasePath",
         "THREEXUI_USERNAME": "admin",
         "THREEXUI_PASSWORD": "your-password"
       }
