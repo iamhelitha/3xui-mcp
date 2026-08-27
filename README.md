@@ -52,17 +52,36 @@ THREEXUI_API_TOKEN=your-token
 THREEXUI_PANEL_TYPE=auto   # auto | modern | legacy
 ```
 
-## Build & run
+## Use with an MCP client
+
+Add to your client's MCP config (e.g. Claude Desktop `claude_desktop_config.json`). No install or path needed — `npx` fetches and runs the published package on demand:
+
+```json
+{
+  "mcpServers": {
+    "3xui": {
+      "command": "npx",
+      "args": ["-y", "3xui-mcp"],
+      "env": {
+        "THREEXUI_BASE_URL": "https://your-panel.example.com",
+        "THREEXUI_USERNAME": "admin",
+        "THREEXUI_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+### Running from source instead
+
+If you're developing this server locally rather than using the published package:
 
 ```bash
 npm install
 npm run build
-npm start
 ```
 
-## Use with an MCP client
-
-Add to your client's MCP config (e.g. Claude Desktop `claude_desktop_config.json`):
+Then point your MCP config at the built file directly — replace the path below with wherever you actually cloned this repo:
 
 ```json
 {
@@ -79,8 +98,6 @@ Add to your client's MCP config (e.g. Claude Desktop `claude_desktop_config.json
   }
 }
 ```
-
-Once published to npm, `command`/`args` can be replaced with `"npx"` / `["-y", "3xui-mcp"]`.
 
 ## Test locally
 
