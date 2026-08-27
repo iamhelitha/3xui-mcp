@@ -1,6 +1,18 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="3xui-mcp — 3x-ui at your fingertips for AI agents" width="100%" />
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/3xui-mcp"><img alt="npm version" src="https://img.shields.io/npm/v/3xui-mcp.svg"></a>
+  <a href="https://www.npmjs.com/package/3xui-mcp"><img alt="npm downloads" src="https://img.shields.io/npm/dw/3xui-mcp.svg"></a>
+  <a href="./LICENSE"><img alt="license" src="https://img.shields.io/npm/l/3xui-mcp.svg"></a>
+  <img alt="node engine" src="https://img.shields.io/node/v/3xui-mcp.svg">
+  <a href="https://github.com/iamhelitha/3xui-mcp/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/iamhelitha/3xui-mcp?style=social"></a>
+</p>
+
 # 3xui-mcp
 
-MCP (Model Context Protocol) server for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel, built on [`3xui-api-client`](https://www.npmjs.com/package/3xui-api-client).
+MCP (Model Context Protocol) server for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel, built on [`3xui-api-client`](https://www.npmjs.com/package/3xui-api-client). Manage inbounds and clients on your VPN panel directly from Claude, Cursor, or any MCP-compatible client.
 
 Scoped intentionally to keep tool context small: **read operations** plus **full CRUD for inbounds and clients**. Nodes, groups, geo files, backups, Xray config, and panel settings are out of scope — extend `src/tools/` if you need them.
 
